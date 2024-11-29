@@ -1,0 +1,154 @@
+info:
+  title: Admin API
+  description: API for admin operations such as managing agents, election results, and payments.
+  version: 1.0.0
+paths:
+  /admin/agents:
+    get:
+      summary: Get all agents with pagination, search, and filtering
+      tags:
+        - Admin
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            default: 10
+        - name: search
+          in: query
+          description: Search keyword to filter agents by name or email
+          required: false
+          schema:
+            type: string
+        - name: filters
+          in: query
+          description: Additional filters for the query
+          required: false
+          schema:
+            type: object
+      responses:
+        '200':
+          description: List of agents with pagination
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                  totalItems:
+                    type: integer
+                  totalPages:
+                    type: integer
+                  currentPage:
+                    type: integer
+        '400':
+          description: Error occurred
+  /admin/election-results:
+    get:
+      summary: Get all election results with pagination and filtering
+      tags:
+        - Admin
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            default: 10
+        - name: filters
+          in: query
+          description: Filters for election results
+          required: false
+          schema:
+            type: object
+      responses:
+        '200':
+          description: List of election results with pagination
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                  totalItems:
+                    type: integer
+                  totalPages:
+                    type: integer
+                  currentPage:
+                    type: integer
+        '400':
+          description: Error occurred
+  /admin/agents/{agentId}:
+    delete:
+      summary: Delete an agent by ID
+      tags:
+        - Admin
+      parameters:
+        - name: agentId
+          in: path
+          description: ID of the agent to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Agent successfully deleted
+        '404':
+          description: Agent not found
+        '400':
+          description: Error occurred
+  /admin/pay-agents:
+    post:
+      summary: Make payments to all agents after elections
+      tags:
+        - Admin
+      responses:
+        '200':
+          description: Payments successfully made to all agents
+        '400':
+          description: Error occurred
+  /admin/analytics:
+    get:
+      summary: Get admin analytics (total agents, payments, etc.)
+      tags:
+        - Admin
+      responses:
+        '200':
+          description: Analytics data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalAgents:
+                    type: integer
+                  totalPayments:
+                    type: number
+                    format: float
+                  otherMetrics:
+                    type: object
+        '400':
+          description: Error occurred

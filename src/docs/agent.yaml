@@ -1,0 +1,194 @@
+info:
+  title: Agent API
+  version: 1.0.0
+  description: API for managing agent profiles and role verification.
+paths:
+  /agents/profile:
+    get:
+      summary: Get agent profile information
+      tags:
+        - Agent
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: Profile information retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Profile information retrieved successfully"
+                  agent:
+                    $ref: '#/definitions/schemas/Agent'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Unauthorized"
+                    
+  /agents/update-profile:
+    put:
+      summary: Update agent profile information
+      tags:
+        - Agent
+      security:
+        - Bearer: []
+      parameters:
+        - in: body
+          name: request
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                example: "John Doe"
+              address:
+                type: object
+                properties:
+                      city:
+                        type: string
+                        example: ""
+                      state:
+                        type: string
+                        example: ""
+                      localGovernment:
+                        type: string
+                        example: ""
+      responses:
+        200:
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Profile updated successfully"
+                  agent:
+                    $ref: '#/definitions/schemas/Agent'
+        400:
+          description: Invalid input or missing data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid input"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Unauthorized"
+  
+  /agents/role:
+    put:
+      summary: Verify agent's role by uploading their BVN
+      tags:
+        - Agent
+      security:
+        - Bearer: []
+      parameters:
+        - in: body
+          name: request
+          required: true
+          schema:
+            type: object
+            properties:
+              bvn:
+                type: string
+                example: "12345678901"
+              nin:
+                type: string
+                example: "12345678901"
+              role:
+                type: string
+                enum:
+                  - POLLING_UNIT
+                  - WARD
+                  - LOCAL
+                  - STATE
+                  - ADMIN
+                example: "POLLING_UNIT"
+      responses:
+        200:
+          description: Role updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Role updated successfully"
+                  agent:
+                    $ref: '#/definitions/schemas/Agent'
+        400:
+          description: Invalid input or missing data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid input"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Unauthorized"
+definitions:
+  securitySchemes:
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Agent:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "agentId123"
+        name:
+          type: string
+          example: "John Doe"
+        address:
+          type: string
+          example: "123 Main St, Cityville"
+        role:
+          type: string
+          enum:
+            - POLLING_UNIT
+            - LOCAL
+            - STATE
+            - ADMIN
+          example: "POLLING_UNIT"
+        bvn:
+          type: string
+          example: "12345678901"
+        nin:
+          type: string
+          example: "123456789012"

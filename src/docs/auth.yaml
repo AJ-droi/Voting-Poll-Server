@@ -1,0 +1,251 @@
+info:
+  title: Auth API
+  version: 1.0.0
+  description: API for user authentication, registration, and password management.
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      tags:
+        - Authentication
+      parameters:
+        - in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/register"
+      responses:
+        201:
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  token:
+                    type: string
+        400:
+          description: Error during registration
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /auth/login:
+    post:
+      summary: Log in an existing user
+      tags:
+        - Authentication
+      parameters:
+        - in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/login"
+      responses:
+        200:
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        400:
+          description: Error during login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /auth/verify-email/{token}:
+    get:
+      summary: Verify a user's email
+      tags:
+        - Authentication
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+            example: your-verification-token
+      responses:
+        200:
+          description: Email verified successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        400:
+          description: Error during email verification
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /auth/forgot-password:
+    post:
+      summary: Request a password reset email
+      tags:
+        - Password Management
+      parameters:
+        - in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/forgotPassword"
+      responses:
+        200:
+          description: Password reset email sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        400:
+          description: Error sending password reset email
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "User not found"
+
+  /auth/reset-password:
+    post:
+      summary: Reset the user's password
+      tags:
+        - Password Management
+      parameters:
+        - in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/resetPassword"
+      responses:
+        200:
+          description: Password reset successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        400:
+          description: Error during password reset
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        404:
+          description: Invalid reset token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid reset token"
+        410:
+          description: Token expired
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Reset token expired"
+
+definitions:
+  register:
+    type: object
+    required:
+      - username
+      - password
+      - email
+    properties:
+      username:
+        type: string
+        example: "john_doe"
+      password:
+        type: string
+        format: password
+        example: "P@ssw0rd"
+      email:
+        type: string
+        format: email
+        example: "user@example.com"
+
+  login:
+    type: object
+    required:
+      - email
+      - password
+    properties:
+      email:
+        type: string
+        format: email
+        example: "user@example.com"
+      password:
+        type: string
+        format: password
+        example: "P@ssw0rd"
+
+  forgotPassword:
+    type: object
+    required:
+      - email
+    properties:
+      email:
+        type: string
+        format: email
+        example: user@example.com
+
+  resetPassword:
+    type: object
+    required:
+      - token
+      - newPassword
+    properties:
+      token:
+        type: string
+        example: your-reset-token
+      newPassword:
+        type: string
+        format: password
+        example: myNewSecurePassword

@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Agent {
+  id                 String         @id @default(uuid()) // Use UUID for the id
+  email              String         @unique
+  password           String
+  name               String
+  role               Role?          @default(UN_KNOWN) // Optional role field
+  bvn                String         @default("") // Default empty string
+  nin                String         @default("") // Default empty string
+  address            Address?       @relation(fields: [addressId], references: [id]) // Optional address
+  addressId          String?        @unique // UUID and optional
+  pollingUnit        PollingUnitInformation? @relation(fields: [pollingUnitId], references: [id])
+  pollingUnitId      String?        @unique // Add `@unique` for a one-to-one relationship
+  electionResults    ElectionResult[] // Add reverse relation to ElectionResult
+  paymentDetails     Payment[]
+  isVerified         Boolean        @default(false) // Email verification status
+  verificationToken  String?        // Token for email verification
+  passwordResetToken String?        // Token for password reset
+  passwordResetExpires DateTime?    // Expiry time for password reset
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+}
+
+model Payment {
+  id       String @id @default(uuid())
+  agentId  String
+  amount   Float
+  status   String
+  agent    Agent @relation(fields: [agentId], references: [id])
+}
+
+model PollingUnitInformation {
+  id               String           @id @default(uuid()) // Use UUID for the id
+  ward             String
+  localGovernment  String
+  state            String
+  agent            Agent?           @relation // Reverse relation to Agent
+  electionResults  ElectionResult[] // Reverse relation to ElectionResult
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+model ElectionResult {
+  id                     String                @id @default(uuid()) // Use UUID for the id
+  agentId                String
+  agent                  Agent                 @relation(fields: [agentId], references: [id])
+  pollingUnitId          String?
+  pollingUnitInformation PollingUnitInformation? @relation(fields: [pollingUnitId], references: [id])
+  resultImage            String
+  createdAt              DateTime              @default(now())
+}
+
+model Address {
+  id               String  @id @default(uuid()) // Use UUID for the id
+  state            String
+  city             String
+  localGovernment  String
+  agent            Agent?  @relation
+}
+
+model Admin {
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  password   String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+enum Role {
+  POLLING_UNIT
+  WARD
+  LOCAL
+  STATE
+  ADMIN
+  UN_KNOWN
+}

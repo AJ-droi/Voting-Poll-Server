@@ -1,0 +1,69 @@
+info:
+  title: Election API
+  version: 1.0.0
+  description: API for uploading election results.
+paths:
+  /election-results/upload:
+    post:
+      summary: Upload election result
+      tags:
+        - Election
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: file
+          type: file
+          required: true
+          description: The election result file to upload.
+        - in: header
+          name: Authorization
+          type: string
+          required: true
+          description: Bearer token for authentication.
+      responses:
+        201:
+          description: Election result uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Election result uploaded successfully"
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: "resultId123"
+                      agentId:
+                        type: string
+                        example: "agentId456"
+                      fileUrl:
+                        type: string
+                        example: "https://example.com/uploads/result.pdf"
+        400:
+          description: Error during file upload
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "No file uploaded"
+definitions:
+  uploadResponse:
+    type: object
+    properties:
+      id:
+        type: string
+        example: "resultId123"
+      agentId:
+        type: string
+        example: "agentId456"
+      fileUrl:
+        type: string
+        example: "https://example.com/uploads/result.pdf"

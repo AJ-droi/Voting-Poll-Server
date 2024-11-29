@@ -1,0 +1,31 @@
+{
+  "inputs": [
+    {
+      "inputFile": "./src/docs/admin.yaml",
+      "pathModification": {
+        "prepend": "/admin"
+      },
+      "description": {
+        "append": true,
+        "title": {
+          "value": "Admin API",
+          "headingLevel": 2
+        }
+      }
+    },
+    {
+      "inputFile": "./src/docs/auth.yaml",
+      "pathModification": {
+        "prepend": "/auth"
+      },
+      "description": {
+        "append": true,
+        "title": {
+          "value": "Authentication API",
+          "headingLevel": 2
+        }
+      }
+    }
+  ],
+  "output": "./src/docs/merged-swagger.yaml"
+}
